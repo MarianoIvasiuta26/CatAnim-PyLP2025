@@ -34,15 +34,7 @@
           <parameter key="idcategoria" value="label"/>
         </list>
       </operator>
-      <operator activated="true" class="filter_examples" compatibility="12.0.001" expanded="true" height="103" name="Filter Examples" width="90" x="648" y="238">
-        <parameter key="parameter_expression" value=""/>
-        <parameter key="condition_class" value="custom_filters"/>
-        <parameter key="invert_filter" value="false"/>
-        <list key="filters_list"/>
-        <parameter key="filters_logic_and" value="true"/>
-        <parameter key="filters_check_metadata" value="true"/>
-      </operator>
-      <operator activated="true" class="blending:split_data" compatibility="12.0.001" expanded="true" height="103" name="Split Data" width="90" x="849" y="238">
+      <operator activated="true" class="blending:split_data" compatibility="12.0.001" expanded="true" height="103" name="Split Data" width="90" x="648" y="238">
         <enumeration key="partitions">
           <parameter key="ratio" value="0.8"/>
           <parameter key="ratio" value="0.2"/>
@@ -51,7 +43,7 @@
         <parameter key="use_local_random_seed" value="true"/>
         <parameter key="local_random_seed" value="1992"/>
       </operator>
-      <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="12.0.001" expanded="true" height="103" name="Decision Tree" width="90" x="1050" y="85">
+      <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="12.0.001" expanded="true" height="103" name="Decision Tree" width="90" x="916" y="136">
         <parameter key="criterion" value="gain_ratio"/>
         <parameter key="maximal_depth" value="10"/>
         <parameter key="apply_pruning" value="true"/>
@@ -62,11 +54,22 @@
         <parameter key="minimal_size_for_split" value="4"/>
         <parameter key="number_of_prepruning_alternatives" value="3"/>
       </operator>
-      <operator activated="true" class="multiply" compatibility="12.0.001" expanded="true" height="103" name="Multiply" width="90" x="1251" y="34"/>
-      <operator activated="true" class="apply_model" compatibility="12.0.001" expanded="true" height="82" name="Apply Model" width="90" x="1452" y="238">
+      <operator activated="true" class="multiply" compatibility="12.0.001" expanded="true" height="103" name="Multiply" width="90" x="1050" y="85"/>
+      <operator activated="true" class="operator_toolbox:get_dectree_path" compatibility="3.0.000" expanded="true" height="82" name="Get Decision Tree Path" width="90" x="1184" y="187"/>
+      <operator activated="true" class="write_csv" compatibility="12.0.001" expanded="true" height="82" name="Write CSV" width="90" x="1385" y="187">
+        <parameter key="csv_file" value="/home/mariano/Escritorio/2025-FACU/2025-Paradigma/CatAnim-PyLP2025/animals_rules.csv"/>
+        <parameter key="column_separator" value=";"/>
+        <parameter key="write_attribute_names" value="true"/>
+        <parameter key="quote_nominal_values" value="true"/>
+        <parameter key="format_date_attributes" value="true"/>
+        <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+        <parameter key="append_to_file" value="false"/>
+        <parameter key="encoding" value="SYSTEM"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="12.0.001" expanded="true" height="82" name="Apply Model" width="90" x="1184" y="340">
         <list key="application_parameters"/>
       </operator>
-      <operator activated="true" class="performance_classification" compatibility="12.0.001" expanded="true" height="82" name="Performance" width="90" x="1653" y="238">
+      <operator activated="true" class="performance_classification" compatibility="12.0.001" expanded="true" height="82" name="Performance" width="90" x="1385" y="34">
         <parameter key="main_criterion" value="first"/>
         <parameter key="accuracy" value="true"/>
         <parameter key="classification_error" value="false"/>
@@ -95,14 +98,16 @@
       </operator>
       <connect from_op="Retrieve BD_animales" from_port="output" to_op="Numerical to Polynominal" to_port="example set input"/>
       <connect from_op="Numerical to Polynominal" from_port="example set output" to_op="Set Role" to_port="example set input"/>
-      <connect from_op="Set Role" from_port="example set output" to_op="Filter Examples" to_port="example set input"/>
-      <connect from_op="Filter Examples" from_port="example set output" to_op="Split Data" to_port="example set"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Split Data" to_port="example set"/>
       <connect from_op="Split Data" from_port="partition 1" to_op="Decision Tree" to_port="training set"/>
       <connect from_op="Split Data" from_port="partition 2" to_op="Apply Model" to_port="unlabelled data"/>
       <connect from_op="Decision Tree" from_port="model" to_op="Multiply" to_port="input"/>
-      <connect from_op="Multiply" from_port="output 1" to_op="Apply Model" to_port="model"/>
-      <connect from_op="Multiply" from_port="output 2" to_port="result 2"/>
+      <connect from_op="Decision Tree" from_port="exampleSet" to_op="Get Decision Tree Path" to_port="exa"/>
+      <connect from_op="Multiply" from_port="output 1" to_op="Get Decision Tree Path" to_port="mod"/>
+      <connect from_op="Multiply" from_port="output 2" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Get Decision Tree Path" from_port="exa" to_op="Write CSV" to_port="input"/>
       <connect from_op="Apply Model" from_port="labelled data" to_op="Performance" to_port="labelled data"/>
+      <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
       <connect from_op="Performance" from_port="performance" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
